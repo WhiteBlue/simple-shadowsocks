@@ -52,12 +52,12 @@ func (c *Conn) Write(b []byte) (int, error) {
 	}
 
 	buf := c.writeBuf
-	dataSize := len(b) + len(c.iv)
-	if dataSize > len(buf) {
-		buf = make([]byte, dataSize)
-	} else {
-		buf = buf[:dataSize]
-	}
+	//dataSize := len(b) + len(c.iv)
+	//if dataSize > len(buf) {
+	//	buf = make([]byte, dataSize)
+	//} else {
+	//	buf = buf[:dataSize]
+	//}
 
 	//copy iv to buffer
 	copy(buf, c.iv)
@@ -100,17 +100,20 @@ func PipeConnection(src, dst net.Conn, timeout time.Duration) {
 	buf, _ := bufPool.Get().([]byte)
 	defer bufPool.Put(buf)
 
+	src.SetReadDeadline(time.Now().Add(timeout))
+
 	for {
-		src.SetReadDeadline(time.Now().Add(timeout))
 		n, err := src.Read(buf)
 		if n > 0 {
 			if _, err := dst.Write(buf[:n]); err != nil {
-				log.Debug("write:", err)
+				log.Debugf("error when write to dst, error: %s", err)
 				break
 			}
 		}
 		if err != nil {
-			log.Debug("read err: ", err)
+			if err != io.EOF {
+				log.Errorf("error when read from src, error: %s", err)
+			}
 			break
 		}
 	}

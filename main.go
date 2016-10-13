@@ -8,7 +8,7 @@ import (
 )
 
 func RunServer() {
-	shadowsocks.ListenPort("9000", "rc4-md5", "whiteblue", 2 * time.Second)
+	shadowsocks.ListenPort("9000", "rc4-md5", "whiteblue", 2 * time.Microsecond)
 }
 
 func main() {

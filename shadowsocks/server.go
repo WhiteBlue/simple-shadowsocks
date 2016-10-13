@@ -59,7 +59,7 @@ func unSerializeRequest(conn *Conn) (string, error) {
 		return "", fmt.Errorf("addr type %d not supported", addrType & AddrMask)
 	}
 
-	if _, err := io.ReadFull(conn, buf[reqStart:reqEnd + lenPort]); err != nil {
+	if _, err := io.ReadFull(conn, buf[reqStart:reqEnd]); err != nil {
 		return "", err
 	}
 
